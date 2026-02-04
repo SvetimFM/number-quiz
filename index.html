@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Does Number Exist? A Philosophy Quiz</title>
+    <meta name="description" content="A Buzzfeed-style quiz to discover your philosophy of mathematics. Are you a Platonist, Fictionalist, Formalist, Intuitionist, or Structuralist?">
+    <meta property="og:title" content="Does Number Exist? A Philosophy Quiz">
+    <meta property="og:description" content="We don't know if 7 exists. This quiz helps you figure out what you think about it. 10 questions, 5 positions, genuine philosophical stakes.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { margin: 0; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+const { useState } = React;
+
+const questions = [
+  {
+    id: 1,
+    question: "When mathematicians discovered that there are infinitely many primes, what happened?",
+    questionSimple: "When people found out that prime numbers go on forever, what happened?",
+    answers: [
+      { 
+        text: "They uncovered a fact that was already true, waiting to be found.", 
+        textSimple: "They found something that was already true, waiting to be found.",
+        interpretation: "platonism", 
+        tone: "discovery realist",
+        toneSimple: "it was always there"
+      },
+      { 
+        text: "They constructed a proof. The 'infinity' is a feature of the proof, not a completed object.", 
+        textSimple: "They built a way to show it. The 'forever' is about the showing, not a real thing.",
+        interpretation: "intuitionism", 
+        tone: "constructivist",
+        toneSimple: "we built the proof"
+      },
+      { 
+        text: "They derived a theorem within a formal system. That's all 'discovered' means.", 
+        textSimple: "They followed rules and got an answer. That is all 'found' means here.",
+        interpretation: "formalism", 
+        tone: "deflationary",
+        toneSimple: "just following rules"
+      },
+      { 
+        text: "They extended a useful fiction. There aren't actually infinitely many of anything.", 
+        textSimple: "They added to a made-up story. Nothing is really endless.",
+        interpretation: "fictionalism", 
+        tone: "useful falsehood",
+        toneSimple: "it's a story we tell"
+      },
+      { 
+        text: "They identified a structural feature of the natural number pattern.", 
+        textSimple: "They found something about the shape of how numbers are set up.",
+        interpretation: "structuralism", 
+        tone: "pattern-focused",
+        toneSimple: "it's about the pattern"
+      }
+    ]
+  },
+  {
+    id: 2,
+    question: "Where is the number 7?",
+    questionSimple: "Where is the number 7?",
+    answers: [
+      { 
+        text: "It exists in an abstract realm, outside space and time.", 
+        textSimple: "It is real, but not in any place. It is outside of where and when.",
+        interpretation: "platonism", 
+        tone: "abstract realist",
+        toneSimple: "real but not in a place"
+      },
+      { 
+        text: "Nowhere. '7' is a symbol we manipulate according to rules.", 
+        textSimple: "Nowhere. '7' is a mark we move around following rules.",
+        interpretation: "formalism", 
+        tone: "symbol-minded",
+        toneSimple: "just a mark on paper"
+      },
+      { 
+        text: "In minds that can construct it. It exists when we build it.", 
+        textSimple: "In the minds of people who can think it. It is real when we make it.",
+        interpretation: "intuitionism", 
+        tone: "mental construction",
+        toneSimple: "we make it in our minds"
+      },
+      { 
+        text: "The question is confused. 7 is a position in the number structure, not a located thing.", 
+        textSimple: "The question is wrong. 7 is a place in a pattern, not a thing that can be somewhere.",
+        interpretation: "structuralism", 
+        tone: "structural",
+        toneSimple: "it's a place in a pattern"
+      },
+      { 
+        text: "Nowhere, because it doesn't exist. It's a useful fiction, like Sherlock Holmes.", 
+        textSimple: "Nowhere, because it is not real. It is made up, like a story character.",
+        interpretation: "fictionalism", 
+        tone: "fictionalist",
+        toneSimple: "it's made up"
+      }
+    ]
+  },
+  {
+    id: 3,
+    question: "Why does math work so well for physics?",
+    questionSimple: "Why does math work so well for understanding how the world works?",
+    answers: [
+      { 
+        text: "Because mathematical structures are real, and physics discovers which ones describe our world.", 
+        textSimple: "Because math is real, and we find out which parts match our world.",
+        interpretation: "platonism", 
+        tone: "structural realism",
+        toneSimple: "math is real, world matches it"
+      },
+      { 
+        text: "We invented math *for* describing patterns. Of course it fits — we made it to.", 
+        textSimple: "We made math to describe patterns. Of course it fits — we made it to fit.",
+        interpretation: "fictionalism", 
+        tone: "instrumentalist",
+        toneSimple: "we made it to fit"
+      },
+      { 
+        text: "Physics uses formal systems. Math is formal systems. Same tool, different applications.", 
+        textSimple: "Science uses rules and symbols. Math is rules and symbols. Same tool, different uses.",
+        interpretation: "formalism", 
+        tone: "methodological",
+        toneSimple: "same kind of tool"
+      },
+      { 
+        text: "The math that works is the math we can actually construct and verify.", 
+        textSimple: "The math that works is the math we can really build and check.",
+        interpretation: "intuitionism", 
+        tone: "epistemic",
+        toneSimple: "we can check what works"
+      },
+      { 
+        text: "Physical systems share structural features with mathematical structures. That's the connection.", 
+        textSimple: "The world and math have the same shapes. That is why they fit together.",
+        interpretation: "structuralism", 
+        tone: "structural mapping",
+        toneSimple: "same shapes"
+      }
+    ]
+  },
+  {
+    id: 4,
+    question: "Is mathematics discovered or invented?",
+    questionSimple: "Do we find math, or do we make it up?",
+    answers: [
+      { 
+        text: "Discovered. We're explorers mapping terrain that exists independently of us.", 
+        textSimple: "We find it. We are like people looking at a land that was already there.",
+        interpretation: "platonism", 
+        tone: "explorer",
+        toneSimple: "it was already there"
+      },
+      { 
+        text: "Invented. We create formal systems and explore their consequences.", 
+        textSimple: "We make it up. We build rule-games and see what happens.",
+        interpretation: "formalism", 
+        tone: "game designer",
+        toneSimple: "we build it"
+      },
+      { 
+        text: "Constructed. We build mathematical objects through mental acts.", 
+        textSimple: "We build it. We make math things by thinking them into being.",
+        interpretation: "intuitionism", 
+        tone: "builder",
+        toneSimple: "we think it into being"
+      },
+      { 
+        text: "Neither — we identify structural possibilities. The structures are there; we recognize them.", 
+        textSimple: "Neither — we see patterns that could be. The shapes are there; we notice them.",
+        interpretation: "structuralism", 
+        tone: "pattern recognizer",
+        toneSimple: "we notice patterns"
+      },
+      { 
+        text: "Invented. It's fiction — very useful, highly constrained fiction.", 
+        textSimple: "We make it up. It is a story — a very useful one with strict rules.",
+        interpretation: "fictionalism", 
+        tone: "storyteller",
+        toneSimple: "a useful story"
+      }
+    ]
+  },
+  {
+    id: 5,
+    question: "What makes '2 + 2 = 4' true?",
+    questionSimple: "What makes '2 + 2 = 4' true?",
+    answers: [
+      { 
+        text: "It corresponds to a fact about abstract objects.", 
+        textSimple: "It matches how number-things really are.",
+        interpretation: "platonism", 
+        tone: "correspondence",
+        toneSimple: "it matches what's real"
+      },
+      { 
+        text: "It's derivable from the axioms of arithmetic.", 
+        textSimple: "It follows from the starting rules we set up.",
+        interpretation: "formalism", 
+        tone: "derivation",
+        toneSimple: "it follows from the rules"
+      },
+      { 
+        text: "We can construct a proof of it from basic intuitions.", 
+        textSimple: "We can build a way to show it from simple things we know directly.",
+        interpretation: "intuitionism", 
+        tone: "constructive proof",
+        toneSimple: "we can build a proof"
+      },
+      { 
+        text: "It's true within the fiction of arithmetic, like 'Holmes lived on Baker Street.'", 
+        textSimple: "It is true inside the math story, like saying a story character lived somewhere.",
+        interpretation: "fictionalism", 
+        tone: "fictional truth",
+        toneSimple: "true in the story"
+      },
+      { 
+        text: "It reflects the structure of any system with those relational properties.", 
+        textSimple: "It shows how any pattern with those features must work.",
+        interpretation: "structuralism", 
+        tone: "structural necessity",
+        toneSimple: "the pattern has to work that way"
+      }
+    ]
+  },
+  {
+    id: 6,
+    question: "A theorem is proven but has no known applications. Does it describe something real?",
+    questionSimple: "Someone proves something in math, but no one can use it for anything. Is it about something real?",
+    answers: [
+      { 
+        text: "Yes. It describes a fact about the abstract realm, regardless of applications.", 
+        textSimple: "Yes. It is about something real, even if no one uses it.",
+        interpretation: "platonism", 
+        tone: "application-independent",
+        toneSimple: "real even if not useful"
+      },
+      { 
+        text: "It's a valid derivation in a formal system. 'Real' doesn't apply.", 
+        textSimple: "It follows the rules correctly. 'Real' is not the right word here.",
+        interpretation: "formalism", 
+        tone: "validity over reality",
+        toneSimple: "it follows the rules"
+      },
+      { 
+        text: "If it's constructively proven, it describes something we've genuinely built.", 
+        textSimple: "If we really built the proof, then yes, we made something.",
+        interpretation: "intuitionism", 
+        tone: "constructed existence",
+        toneSimple: "we built something"
+      },
+      { 
+        text: "It extends the fiction coherently. Useful or not, it's part of the story.", 
+        textSimple: "It adds to the made-up story in a way that fits. Still made up though.",
+        interpretation: "fictionalism", 
+        tone: "coherent fiction",
+        toneSimple: "part of the story"
+      },
+      { 
+        text: "It identifies structural facts that any system with that structure would exhibit.", 
+        textSimple: "It shows what must be true for any pattern like that.",
+        interpretation: "structuralism", 
+        tone: "structural truth",
+        toneSimple: "true for all patterns like that"
+      }
+    ]
+  },
+  {
+    id: 7,
+    question: "Could mathematics have been different?",
+    questionSimple: "Could math have been different than it is?",
+    answers: [
+      { 
+        text: "No. Mathematical truths are necessary, not contingent.", 
+        textSimple: "No. Math has to be the way it is. It could not be another way.",
+        interpretation: "platonism", 
+        tone: "necessity",
+        toneSimple: "it has to be this way"
+      },
+      { 
+        text: "Yes — we could have different formal systems with different axioms.", 
+        textSimple: "Yes — we could have made up different rules and gotten different results.",
+        interpretation: "formalism", 
+        tone: "conventional",
+        toneSimple: "we could have made different rules"
+      },
+      { 
+        text: "Only within limits. Our basic intuitions of number and sequence constrain what we can construct.", 
+        textSimple: "Only a little. How our minds work sets limits on what we can build.",
+        interpretation: "intuitionism", 
+        tone: "constrained construction",
+        toneSimple: "our minds set limits"
+      },
+      { 
+        text: "We could have told different stories, but this one is particularly useful.", 
+        textSimple: "We could have made up a different story, but this one works well.",
+        interpretation: "fictionalism", 
+        tone: "pragmatic fiction",
+        toneSimple: "could be different, but this works"
+      },
+      { 
+        text: "Different structures exist. We focus on ones that interest us or apply to our world.", 
+        textSimple: "Many patterns exist. We look at the ones we care about or that match our world.",
+        interpretation: "structuralism", 
+        tone: "selection from plurality",
+        toneSimple: "many patterns, we pick some"
+      }
+    ]
+  },
+  {
+    id: 8,
+    question: "How do you feel about infinity?",
+    questionSimple: "How do you feel about things that go on forever?",
+    answers: [
+      { 
+        text: "Infinite sets exist as completed totalities. We can reason about them coherently.", 
+        textSimple: "Endless things are real and whole. We can think about them clearly.",
+        interpretation: "platonism", 
+        tone: "actual infinity",
+        toneSimple: "endless things are real"
+      },
+      { 
+        text: "Infinity is a feature of formal systems — symbol manipulation without ontological commitment.", 
+        textSimple: "Forever is just part of the rule-game. It does not mean something endless is really there.",
+        interpretation: "formalism", 
+        tone: "symbolic infinity",
+        toneSimple: "just part of the game"
+      },
+      { 
+        text: "We can never complete an infinite process. Only potential infinity makes sense.", 
+        textSimple: "We can never finish something endless. We can only keep going, not be done.",
+        interpretation: "intuitionism", 
+        tone: "potential only",
+        toneSimple: "can keep going, never done"
+      },
+      { 
+        text: "Infinity is a useful fiction that helps us reason, but nothing is actually infinite.", 
+        textSimple: "Forever is a useful make-believe. Nothing is really endless.",
+        interpretation: "fictionalism", 
+        tone: "fictional infinity",
+        toneSimple: "useful make-believe"
+      },
+      { 
+        text: "Infinite structures exist as patterns. What matters is the structural relationships.", 
+        textSimple: "Endless patterns exist as shapes. What matters is how the parts connect.",
+        interpretation: "structuralism", 
+        tone: "structural infinity",
+        toneSimple: "endless patterns are real shapes"
+      }
+    ]
+  },
+  {
+    id: 9,
+    question: "A child learns that 3 + 5 = 8. What just happened?",
+    questionSimple: "A child learns that 3 + 5 = 8. What just happened?",
+    answers: [
+      { 
+        text: "They gained knowledge of an eternal truth.", 
+        textSimple: "They came to know something that was always true.",
+        interpretation: "platonism", 
+        tone: "knowledge acquisition",
+        toneSimple: "they learned a truth"
+      },
+      { 
+        text: "They learned a rule for symbol manipulation.", 
+        textSimple: "They learned a rule for moving marks around.",
+        interpretation: "formalism", 
+        tone: "rule learning",
+        toneSimple: "they learned a rule"
+      },
+      { 
+        text: "They constructed that truth in their own mind through intuition.", 
+        textSimple: "They built that truth in their own mind by thinking it through.",
+        interpretation: "intuitionism", 
+        tone: "mental construction",
+        toneSimple: "they built it in their mind"
+      },
+      { 
+        text: "They learned a piece of a useful fiction that helps navigate the world.", 
+        textSimple: "They learned part of a useful made-up story that helps them get around.",
+        interpretation: "fictionalism", 
+        tone: "fiction adoption",
+        toneSimple: "they learned a useful story"
+      },
+      { 
+        text: "They grasped a structural relationship that holds across any number-like system.", 
+        textSimple: "They understood how parts fit together in any pattern like numbers.",
+        interpretation: "structuralism", 
+        tone: "structural grasp",
+        toneSimple: "they saw how the pattern works"
+      }
+    ]
+  },
+  {
+    id: 10,
+    question: "If all conscious beings disappeared, would mathematical truths still hold?",
+    questionSimple: "If all people and thinking things were gone, would math still be true?",
+    answers: [
+      { 
+        text: "Yes. Mathematical truths are mind-independent.", 
+        textSimple: "Yes. Math is true whether or not anyone is there to know it.",
+        interpretation: "platonism", 
+        tone: "mind-independence",
+        toneSimple: "true with no one to know it"
+      },
+      { 
+        text: "The formal systems would be gone with us. No minds, no symbol games.", 
+        textSimple: "The rule-games would be gone with us. No thinkers, no games.",
+        interpretation: "formalism", 
+        tone: "human practice",
+        toneSimple: "no thinkers, no rules"
+      },
+      { 
+        text: "No. Math exists only through mental construction. No minds, no math.", 
+        textSimple: "No. Math only exists when minds build it. No minds, no math.",
+        interpretation: "intuitionism", 
+        tone: "mind-dependence",
+        toneSimple: "no minds, no math"
+      },
+      { 
+        text: "There'd be nothing to be true or false. Fictions require storytellers.", 
+        textSimple: "There would be nothing to be true or not. Made-up stories need someone to tell them.",
+        interpretation: "fictionalism", 
+        tone: "no fictions without tellers",
+        toneSimple: "stories need tellers"
+      },
+      { 
+        text: "The structures would still exist as possibilities, even if no one contemplated them.", 
+        textSimple: "The patterns would still be there as things that could be, even with no one to think about them.",
+        interpretation: "structuralism", 
+        tone: "structure without observers",
+        toneSimple: "patterns are still there"
+      }
+    ]
+  }
+];
+
+const interpretations = {
+  platonism: {
+    name: "Platonism",
+    emoji: "🏛️",
+    tagline: "Numbers are real. We discover them.",
+    taglineSimple: "Numbers are real things. We find them.",
+    description: "You believe mathematical objects exist independently of human minds, in an abstract realm outside space and time. When Euclid proved theorems about triangles, he was discovering eternal truths, not inventing them. The number 7 is as real as this table — just not physical. This view explains why math feels objective and why it applies so well to the world.",
+    descriptionSimple: "You think numbers are real things that exist on their own, not in any place but still real. When people prove things in math, they are finding what was always true. The number 7 is as real as a rock — just not something you can touch. This explains why math feels true and why it helps us understand the world.",
+    strengths: "Explains the objectivity of mathematics. Accounts for the feeling of discovery. Makes sense of math's 'unreasonable effectiveness' in physics.",
+    strengthsSimple: "Explains why math feels true for everyone. Matches how it feels to figure out new math. Explains why math works so well for understanding the world.",
+    tensions: "How do we access this abstract realm? If numbers aren't in space or time, how do physical brains know about them? The epistemology is mysterious.",
+    tensionsSimple: "If numbers are not in any place, how do our brains know about them? How can we learn about things we cannot see or touch? This is hard to explain.",
+    philosophers: "Plato, Frege, Gödel, and many working mathematicians who don't think about philosophy.",
+    philosophersSimple: "Plato, Frege, Gödel. Also many people who do math every day without thinking about this.",
+    youMightAlsoLike: "Modal realism. If you're already accepting abstract objects, maybe possible worlds are real too.",
+    youMightAlsoLikeSimple: "The idea that every way things could be is a real place. If numbers are real, maybe possible worlds are too."
+  },
+  formalism: {
+    name: "Formalism",
+    emoji: "🎮",
+    tagline: "Math is symbol manipulation. The game is the thing.",
+    taglineSimple: "Math is moving marks around by rules. The game is what matters.",
+    description: "You think mathematics is essentially a formal game with symbols. We set up axioms and rules, then derive consequences. Questions about whether numbers 'really exist' are misguided — we're just pushing symbols according to rules. The content is the game itself, not some realm of abstract objects. This view is clean and deflates metaphysical worries.",
+    descriptionSimple: "You think math is like a game with rules for moving marks around. We set up starting rules, then see what follows. Asking if numbers are 'really real' is the wrong question — we are just following rules. The game itself is what matters, not some other world. This view is simple and does not need strange things to be real.",
+    strengths: "No mysterious abstract objects. Clear about what mathematical practice actually involves. Sidesteps epistemological puzzles.",
+    strengthsSimple: "No strange things that have to be real. Clear about what doing math really is. Does not need to explain how we know about things outside our world.",
+    tensions: "Why does this particular game work for physics? Is there really no difference between math and arbitrary symbol games? Gödel's results suggest formal systems can't capture all mathematical truth.",
+    tensionsSimple: "Why does this game work so well for understanding the world? Is math really just like any made-up game? Some proofs show that rules cannot capture everything that is true in math.",
+    philosophers: "Hilbert (though his program failed), Curry, some logical positivists.",
+    philosophersSimple: "Hilbert, Curry. People who wanted to make math as simple and clear as possible.",
+    youMightAlsoLike: "Game theory. If you see math as a game, you might enjoy studying games themselves.",
+    youMightAlsoLikeSimple: "The study of games and how to play them well. If math is a game, why not study games?"
+  },
+  intuitionism: {
+    name: "Intuitionism",
+    emoji: "🔨",
+    tagline: "Math is mental construction. We build it.",
+    taglineSimple: "Math is what we build in our minds. We make it.",
+    description: "You believe mathematical objects exist only when we construct them through mental acts. A proof doesn't discover pre-existing truth — it builds the mathematical object. This means rejecting some classical logic: you can't prove something exists by assuming it doesn't and finding a contradiction. You need to actually construct it. Math is a human activity, not exploration of an independent realm.",
+    descriptionSimple: "You think math things are real only when we build them by thinking. A proof does not find truth that was already there — it makes the math thing. This means some ways of proving things do not work: you cannot show something exists just by showing it would be strange if it did not. You have to really build it. Math is something people do, not something we find.",
+    strengths: "Grounds mathematics in human cognition. Avoids mysterious epistemology. Constructive proofs are often more informative.",
+    strengthsSimple: "Math is about what people can really do and think. No need to explain how we know about strange things. When you build a proof, you really have something.",
+    tensions: "Rejects law of excluded middle, which most mathematicians use freely. Much of classical mathematics becomes invalid or at least unproven. Feels restrictive.",
+    tensionsSimple: "Says some things most math people do are not allowed. Much of normal math would not work or would not be proven. Feels like it takes things away.",
+    philosophers: "Brouwer, Heyting, Dummett. Constructive mathematicians today.",
+    philosophersSimple: "Brouwer, Heyting. People who want math to be about what we can really build and check.",
+    youMightAlsoLike: "Phenomenology. If math is grounded in mental acts, you might enjoy philosophy of consciousness.",
+    youMightAlsoLikeSimple: "Thinking about how the mind works and what it is like to think. If math is in the mind, the mind matters a lot."
+  },
+  fictionalism: {
+    name: "Fictionalism",
+    emoji: "🎭",
+    tagline: "Numbers don't exist. Math is useful fiction.",
+    taglineSimple: "Numbers are not real. Math is a useful made-up story.",
+    description: "You think mathematical statements are literally false — there are no numbers, sets, or functions. But they're useful fictions, like talking about the average family having 2.3 children or Sherlock Holmes living on Baker Street. We can reason coherently within the fiction without committing to its objects being real. This dissolves ontological puzzles by denying the problematic entities exist.",
+    descriptionSimple: "You think math claims are not really true — there are no numbers out there. But math is a useful story, like saying a made-up person lives somewhere. We can think clearly inside the story without saying the things in it are real. This makes hard questions go away by saying the strange things just are not there.",
+    strengths: "No mysterious abstract objects. Explains math's usefulness without heavy ontology. Parsimonious.",
+    strengthsSimple: "No strange things that have to be real. Explains why math is useful without saying odd things exist. Keeps it simple.",
+    tensions: "Why is this particular fiction so useful? Doesn't it feel like we're discovering something, not making it up? Hard to explain the apparent objectivity.",
+    tensionsSimple: "Why does this made-up story work so well? Does it not feel like we are finding things, not making them up? Hard to explain why math feels so true.",
+    philosophers: "Hartry Field, Mary Leng. Connected to nominalism in metaphysics.",
+    philosophersSimple: "Hartry Field, Mary Leng. People who do not want to say strange things are real.",
+    youMightAlsoLike: "Error theory in ethics. If mathematical claims are false but useful, maybe moral claims work similarly.",
+    youMightAlsoLikeSimple: "The idea that claims about right and wrong are not really true, but still useful. Same shape as math fictionalism."
+  },
+  structuralism: {
+    name: "Structuralism",
+    emoji: "🕸️",
+    tagline: "Numbers are positions in patterns, not objects.",
+    taglineSimple: "Numbers are places in patterns, not things.",
+    description: "You think mathematics is about structures, not objects. The number 2 isn't a special object — it's a position in the natural number structure. What makes something 'the number 2' is its relational properties: it's the successor of 1, the predecessor of 3, etc. Any system with those relational features instantiates the structure. Math studies structural possibilities, not particular abstract objects.",
+    descriptionSimple: "You think math is about patterns, not things. The number 2 is not a special thing — it is a place in the number pattern. What makes something '2' is how it relates to other places: it comes after 1, before 3, and so on. Anything that fits that pattern counts. Math looks at how patterns can be, not at special objects.",
+    strengths: "Explains why math applies to many different domains. Avoids questions about the intrinsic nature of numbers. Elegant.",
+    strengthsSimple: "Explains why math works for many different things. Does not need to say what numbers are made of. Clean and nice.",
+    tensions: "Do structures themselves exist? If so, aren't they abstract objects? You might just be pushing the ontological problem back.",
+    tensionsSimple: "Are patterns themselves real? If yes, are they not strange things too? You might just have moved the hard question.",
+    philosophers: "Shapiro, Resnik, Benacerraf (posed the problem). Connects to structuralism in other fields.",
+    philosophersSimple: "Shapiro, Resnik. People who think math is about how things relate, not what things are.",
+    youMightAlsoLike: "Structural realism in philosophy of science. Maybe physical theories describe structures, not intrinsic natures.",
+    youMightAlsoLikeSimple: "The idea that science tells us how things relate, not what things are inside. Same shape as math structuralism."
+  }
+};
+
+function shuffle(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function MathQuiz() {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [scores, setScores] = useState({
+    platonism: 0,
+    formalism: 0,
+    intuitionism: 0,
+    fictionalism: 0,
+    structuralism: 0
+  });
+  const [showResult, setShowResult] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [shuffledQuestions] = useState(() => 
+    questions.map(q => ({ ...q, answers: shuffle(q.answers) }))
+  );
+  const [started, setStarted] = useState(false);
+  const [simpleMode, setSimpleMode] = useState(false);
+
+  const handleAnswer = (interpretation) => {
+    setSelectedAnswer(interpretation);
+    
+    setTimeout(() => {
+      const newScores = { ...scores };
+      newScores[interpretation] += 1;
+      setScores(newScores);
+      
+      if (currentQuestion < shuffledQuestions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedAnswer(null);
+      } else {
+        setShowResult(true);
+      }
+    }, 300);
+  };
+
+  const getResult = () => {
+    const maxScore = Math.max(...Object.values(scores));
+    const topInterpretations = Object.entries(scores)
+      .filter(([_, score]) => score === maxScore)
+      .map(([interp, _]) => interp);
+    return topInterpretations[0];
+  };
+
+  const getRunnerUp = () => {
+    const result = getResult();
+    const remaining = Object.entries(scores)
+      .filter(([interp, _]) => interp !== result)
+      .sort((a, b) => b[1] - a[1]);
+    return remaining[0]?.[0];
+  };
+
+  const resetQuiz = () => {
+    setCurrentQuestion(0);
+    setScores({ platonism: 0, formalism: 0, intuitionism: 0, fictionalism: 0, structuralism: 0 });
+    setShowResult(false);
+    setSelectedAnswer(null);
+    setStarted(false);
+  };
+
+  const ToggleSwitch = () => (
+    <div className="flex items-center gap-3 justify-center mb-6">
+      <span className={`text-sm transition-colors ${!simpleMode ? 'text-amber-300' : 'text-slate-500'}`}>
+        Standard
+      </span>
+      <button
+        onClick={() => setSimpleMode(!simpleMode)}
+        className={`relative w-14 h-7 rounded-full transition-colors duration-200 ${
+          simpleMode ? 'bg-green-600' : 'bg-slate-600'
+        }`}
+        aria-label="Toggle simple language mode"
+      >
+        <div
+          className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 shadow-md ${
+            simpleMode ? 'translate-x-8' : 'translate-x-1'
+          }`}
+        />
+      </button>
+      <span className={`text-sm transition-colors ${simpleMode ? 'text-green-300' : 'text-slate-500'}`}>
+        Simple Words
+      </span>
+    </div>
+  );
+
+  if (!started) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-amber-950 to-slate-900 flex items-center justify-center p-4">
+        <div className="max-w-2xl w-full bg-slate-800/50 backdrop-blur rounded-2xl p-8 shadow-2xl border border-amber-500/20">
+          <h1 className="text-4xl font-bold text-center mb-2 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+            {simpleMode ? "Does the Number 7 Exist?" : "Does Number Exist?"}
+          </h1>
+          <p className="text-amber-300/80 text-center mb-6 text-lg">
+            {simpleMode 
+              ? "A fun way to find out what you think about numbers"
+              : "A quiz about the ontology of mathematics"
+            }
+          </p>
+          
+          <ToggleSwitch />
+          
+          <div className="bg-slate-900/50 rounded-xl p-6 mb-8">
+            {simpleMode ? (
+              <>
+                <p className="text-slate-300 mb-4">
+                  Where is the number 7? Is it real? Did people find it, or make it up?
+                  If all people were gone, would 7 still exist?
+                </p>
+                <p className="text-slate-300 mb-4">
+                  These are real questions that smart people do not agree about.
+                  Math works — but we do not know <em className="text-amber-300">what it is</em>.
+                </p>
+                <p className="text-slate-300">
+                  This will not give you the answer — but it might help you find what you think.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-slate-300 mb-4">
+                  Where is the number 7? Is it real? Was it discovered or invented?
+                  If all minds vanished, would mathematical truths still hold?
+                </p>
+                <p className="text-slate-300 mb-4">
+                  These are genuine open questions in philosophy. Mathematics works — we just don't 
+                  know <em className="text-amber-300">what it is</em>.
+                </p>
+                <p className="text-slate-300">
+                  Philosophers disagree. Mathematicians disagree. This quiz won't settle it — but it 
+                  might help you find your position.
+                </p>
+              </>
+            )}
+          </div>
+
+          <div className="grid grid-cols-5 gap-2 mb-8">
+            {Object.entries(interpretations).map(([key, interp]) => (
+              <div key={key} className="text-center">
+                <div className="text-2xl mb-1">{interp.emoji}</div>
+                <div className="text-xs text-slate-400">{interp.name}</div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setStarted(true)}
+            className="w-full py-4 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 rounded-xl text-white font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-amber-500/25"
+          >
+            {simpleMode ? "Find Out What You Think →" : "Find Your Position →"}
+          </button>
+          
+          <p className="text-slate-500 text-center mt-4 text-sm">
+            {simpleMode 
+              ? "10 questions • 2 minutes • No wrong answers (these are hard questions)"
+              : "10 questions • 2 minutes • No wrong answers (philosophers have been arguing for millennia)"
+            }
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (showResult) {
+    const result = getResult();
+    const runnerUp = getRunnerUp();
+    const interpretation = interpretations[result];
+    const secondary = interpretations[runnerUp];
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-amber-950 to-slate-900 p-4 py-8">
+        <div className="max-w-2xl mx-auto">
+          <ToggleSwitch />
+          
+          <div className="bg-slate-800/50 backdrop-blur rounded-2xl p-8 shadow-2xl border border-amber-500/20 mb-6">
+            <div className="text-center mb-6">
+              <div className="text-6xl mb-4">{interpretation.emoji}</div>
+              <h2 className="text-3xl font-bold text-white mb-2">
+                {simpleMode ? `You think like: ${interpretation.name}` : `You're a ${interpretation.name.replace(/ism$/, 'ist')}`}
+              </h2>
+              <p className="text-xl text-amber-300 italic">
+                "{simpleMode ? interpretation.taglineSimple : interpretation.tagline}"
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-amber-400 font-semibold mb-2">
+                  {simpleMode ? "What You Think" : "The View"}
+                </h3>
+                <p className="text-slate-300">
+                  {simpleMode ? interpretation.descriptionSimple : interpretation.description}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-amber-400 font-semibold mb-2">
+                  {simpleMode ? "What Is Good About This" : "Strengths"}
+                </h3>
+                <p className="text-slate-300">
+                  {simpleMode ? interpretation.strengthsSimple : interpretation.strengths}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-amber-400 font-semibold mb-2">
+                  {simpleMode ? "What Is Hard About This" : "The Tensions"}
+                </h3>
+                <p className="text-slate-300">
+                  {simpleMode ? interpretation.tensionsSimple : interpretation.tensions}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-amber-400 font-semibold mb-2">
+                  {simpleMode ? "People Who Think This Way" : "Your People"}
+                </h3>
+                <p className="text-slate-300">
+                  {simpleMode ? interpretation.philosophersSimple : interpretation.philosophers}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-amber-400 font-semibold mb-2">
+                  {simpleMode ? "Other Ideas You Might Like" : "You Might Also Like"}
+                </h3>
+                <p className="text-slate-300">
+                  {simpleMode ? interpretation.youMightAlsoLikeSimple : interpretation.youMightAlsoLike}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {runnerUp && scores[runnerUp] > 0 && (
+            <div className="bg-slate-800/30 backdrop-blur rounded-xl p-6 mb-6 border border-slate-600/20">
+              <h3 className="text-slate-400 font-semibold mb-2">
+                {simpleMode ? "You also think a bit like" : "Runner-up"}: {secondary.emoji} {secondary.name}
+              </h3>
+              <p className="text-slate-400 text-sm italic">
+                "{simpleMode ? secondary.taglineSimple : secondary.tagline}"
+              </p>
+              <p className="text-slate-500 text-sm mt-2">
+                {simpleMode 
+                  ? `You have some ${secondary.name} in you too. You could read about both.`
+                  : `You've got some ${secondary.name.toLowerCase()} tendencies too. Maybe read up on both.`
+                }
+              </p>
+            </div>
+          )}
+
+          <div className="bg-slate-800/30 backdrop-blur rounded-xl p-6 mb-6 border border-slate-600/20">
+            <h3 className="text-slate-400 font-semibold mb-3">
+              {simpleMode ? "How You Answered" : "Your Score Distribution"}
+            </h3>
+            <div className="space-y-2">
+              {Object.entries(scores)
+                .sort((a, b) => b[1] - a[1])
+                .map(([interp, score]) => (
+                  <div key={interp} className="flex items-center gap-3">
+                    <span className="text-lg">{interpretations[interp].emoji}</span>
+                    <span className="text-slate-400 w-28 text-sm">{interpretations[interp].name}</span>
+                    <div className="flex-1 bg-slate-700 rounded-full h-2">
+                      <div 
+                        className="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${(score / questions.length) * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-slate-500 text-sm w-8">{score}/{questions.length}</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          <div className="bg-slate-900/50 rounded-xl p-6 mb-6">
+            <h3 className="text-slate-400 font-semibold mb-2">
+              {simpleMode ? "One More Thing" : "Remember"}
+            </h3>
+            <p className="text-slate-500 text-sm">
+              {simpleMode 
+                ? "We still do not know if numbers are real. Smart people have thought about this for thousands of years and still do not agree. What you chose says something about how you see the world. That is interesting, not a problem — it is one of the oldest open questions we have."
+                : "The ontology of mathematics is genuinely unresolved. Philosophers have debated this for over two thousand years. Your position reflects deep intuitions about knowledge, existence, and abstraction. That's not a bug — it's one of the oldest and deepest questions in human thought."
+              }
+            </p>
+          </div>
+
+          <button
+            onClick={resetQuiz}
+            className="w-full py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-slate-300 font-medium transition-all duration-200"
+          >
+            {simpleMode ? "Try Again ↺" : "Construct Another Proof ↺"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const question = shuffledQuestions[currentQuestion];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-amber-950 to-slate-900 flex items-center justify-center p-4">
+      <div className="max-w-2xl w-full">
+        <ToggleSwitch />
+        
+        <div className="flex justify-between items-center mb-6">
+          <span className="text-amber-400 text-sm">
+            Question {currentQuestion + 1} of {shuffledQuestions.length}
+          </span>
+          <div className="flex gap-1">
+            {shuffledQuestions.map((_, i) => (
+              <div 
+                key={i} 
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  i < currentQuestion ? 'bg-amber-500' : 
+                  i === currentQuestion ? 'bg-orange-500' : 'bg-slate-600'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 backdrop-blur rounded-2xl p-8 shadow-2xl border border-amber-500/20">
+          <h2 className="text-2xl font-semibold text-white mb-8">
+            {simpleMode ? question.questionSimple : question.question}
+          </h2>
+
+          <div className="space-y-3">
+            {question.answers.map((answer, index) => (
+              <button
+                key={index}
+                onClick={() => handleAnswer(answer.interpretation)}
+                disabled={selectedAnswer !== null}
+                className={`w-full text-left p-4 rounded-xl transition-all duration-200 border ${
+                  selectedAnswer === answer.interpretation
+                    ? 'bg-amber-600 border-amber-400 text-white'
+                    : 'bg-slate-700/50 border-slate-600/50 text-slate-200 hover:bg-slate-700 hover:border-amber-500/50'
+                } ${selectedAnswer !== null && selectedAnswer !== answer.interpretation ? 'opacity-50' : ''}`}
+              >
+                <span className="block">{simpleMode ? answer.textSimple : answer.text}</span>
+                <span className="block text-sm mt-1 opacity-60 italic">
+                  {simpleMode ? answer.toneSimple : answer.tone}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<MathQuiz />);
+    </script>
+</body>
+</html>
